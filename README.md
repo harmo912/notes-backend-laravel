@@ -1,58 +1,210 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# EduPulse — Backend Laravel 11
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Plateforme de gestion académique — API REST sécurisée par Bearer Token (Sanctum).
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Stack technique
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+| Technologie | Version |
+|---|---|
+| PHP | 8.2+ |
+| Laravel | 11.x |
+| Laravel Sanctum | 4.x |
+| MySQL | 8.0+ |
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Installation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
+### 1. Cloner le dépôt
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/votre-user/notes-backend-laravel.git
+cd notes-backend-laravel
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Installer les dépendances
+```bash
+composer install
+```
 
-## Contributing
+### 3. Configurer l'environnement
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 4. Configurer `.env`
+```env
+APP_NAME=EduPulse
+APP_URL=http://localhost:8000
 
-## Code of Conduct
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=gestion_notes_db
+DB_USERNAME=root
+DB_PASSWORD=
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+SANCTUM_STATEFUL_DOMAINS=localhost:3000
+```
 
-## Security Vulnerabilities
+### 5. Créer la base de données et migrer
+```bash
+php artisan migrate
+php artisan db:seed
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 6. Démarrer le serveur
+```bash
+php artisan serve
+```
 
-## License
+L'API est accessible sur `http://localhost:8000`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## Structure des dossiers
+
+```
+app/
+├── Http/
+│   ├── Controllers/Api/
+│   │   ├── AuthController.php
+│   │   ├── UserController.php
+│   │   ├── ClasseController.php
+│   │   ├── MatiereController.php
+│   │   ├── NoteController.php
+│   │   └── AffectationController.php
+│   └── Middleware/
+├── Models/
+│   ├── User.php
+│   ├── Classe.php
+│   ├── Matiere.php
+│   └── Note.php
+└── Services/
+database/
+├── migrations/
+└── seeders/
+routes/
+└── api.php
+bootstrap/
+└── app.php
+```
+
+---
+
+## Endpoints API
+
+### Authentification
+| Méthode | Route | Description | Accès |
+|---|---|---|---|
+| POST | `/api/login` | Connexion | Public |
+| POST | `/api/logout` | Déconnexion | Authentifié |
+| GET | `/api/me` | Utilisateur connecté | Authentifié |
+
+### Utilisateurs (Admin)
+| Méthode | Route | Description |
+|---|---|---|
+| GET | `/api/users` | Liste tous les users |
+| GET | `/api/users/stats` | Statistiques |
+| POST | `/api/users` | Créer un user |
+| PUT | `/api/users/{id}` | Modifier un user |
+| DELETE | `/api/users/{id}` | Supprimer un user |
+
+### Classes
+| Méthode | Route | Description |
+|---|---|---|
+| GET | `/api/classes` | Liste (filtrée par rôle) |
+| POST | `/api/classes` | Créer |
+| PUT | `/api/classes/{id}` | Modifier |
+| DELETE | `/api/classes/{id}` | Supprimer |
+| GET | `/api/classes/{id}/etudiants` | Étudiants d'une classe |
+
+### Matières
+| Méthode | Route | Description |
+|---|---|---|
+| GET | `/api/matieres` | Liste (filtrée par rôle) |
+| POST | `/api/matieres` | Créer |
+| PUT | `/api/matieres/{id}` | Modifier |
+| DELETE | `/api/matieres/{id}` | Supprimer |
+
+### Notes
+| Méthode | Route | Description |
+|---|---|---|
+| GET | `/api/notes` | Liste (filtrée par rôle) |
+| POST | `/api/notes` | Saisie en masse |
+| GET | `/api/notes/moyennes` | Calcul moyennes pondérées |
+| GET | `/api/notes/{id}` | Détail d'une note |
+
+### Affectations
+| Méthode | Route | Description |
+|---|---|---|
+| GET | `/api/affectations` | Liste toutes les affectations |
+| POST | `/api/affectations` | Créer une affectation |
+| DELETE | `/api/affectations/{id}` | Supprimer |
+| POST | `/api/affectations/etudiant` | Affecter étudiant à classe |
+
+---
+
+## Authentification Bearer Token
+
+Toutes les routes protégées nécessitent le header :
+```
+Authorization: Bearer {token}
+```
+
+Le token est retourné lors du login :
+```json
+{
+  "token": "1|xxxxxxxxxxxxxxxx",
+  "token_type": "Bearer",
+  "user": {
+    "id": 1,
+    "name": "Admin Système",
+    "email": "admin@test.com",
+    "role": "admin"
+  }
+}
+```
+
+---
+
+## Comptes de démonstration
+
+| Rôle | Email | Mot de passe |
+|---|---|---|
+| Admin | admin@test.com | password |
+| Enseignant 1 | koffi@test.com | password |
+| Enseignant 2 | marie@test.com | password |
+| Étudiant 1 | etudiant1@test.com | password |
+| Étudiant 2 | etudiant2@test.com | password |
+| Étudiant 3 | etudiant3@test.com | password |
+| Étudiant 4 | etudiant4@test.com | password |
+| Étudiant 5 | etudiant5@test.com | password |
+
+---
+
+## Schéma de base de données
+
+```
+users: id, name, email, password, role, timestamps
+classes: id, nom, annee_academique, timestamps
+matieres: id, nom, code, coefficient_defaut, timestamps
+notes: id, etudiant_id, matiere_id, enseignant_id, valeur, coefficient, type, date_evaluation, timestamps
+enseignant_matiere_classe: id, enseignant_id, matiere_id, classe_id, annee, timestamps
+etudiant_classe: id, etudiant_id, classe_id, annee, timestamps
+```
+
+---
+
+## Déploiement production
+
+```bash
+composer install --optimize-autoloader --no-dev
+php artisan config:cache
+php artisan route:cache
+php artisan migrate --force
+```
+
+Configurer `.env` avec les vraies valeurs DB et `APP_ENV=production`.
