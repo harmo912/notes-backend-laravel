@@ -1,6 +1,5 @@
 FROM php:8.3-apache
 
-# Extensions système
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libzip-dev \
@@ -12,28 +11,26 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Extensions PHP
 RUN docker-php-ext-install pdo pdo_mysql mbstring gd zip
 
-# Mémoire pour Composer
 RUN echo "memory_limit = 512M" > /usr/local/etc/php/conf.d/memory.ini
 
-# Installer Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copier les fichiers
 COPY . /var/www/html/
 
 WORKDIR /var/www/html
 
-# Installer dépendances
-RUN composer install --no-interaction --no-dev --optimize-autoloader --prefer-dist
+# Supprimer le lock existant et forcer la résolution
+RUN rm -f composer.lock
 
-# Permissions
+# Update au lieu de install pour forcer la résolution des dépendances
+RUN rm -f composer.lock
+RUN composer update --no-interaction --no-dev --optimize-autoloader --prefer-dist
+
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Apache → /public
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
