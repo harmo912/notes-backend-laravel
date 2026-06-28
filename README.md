@@ -208,3 +208,19 @@ php artisan migrate --force
 ```
 
 Configurer `.env` avec les vraies valeurs DB et `APP_ENV=production`.
+
+## 🚀 Déploiement
+
+Le backend est déployé sur **Render**.
+
+### Prérequis
+- PHP 8.2+
+- Composer
+- Base de données MySQL (MariaDB)
+
+### Étapes de déploiement
+1. Cloner le dépôt : `git clone https://github.com/harmo912/notes-backend-laravel.git`
+2. Installer les dépendances : `composer install --optimize-autoloader --no-dev`
+3. Configurer le fichier `.env` avec les accès à la base de données distante.
+4. Exécuter les migrations : `php artisan migrate --force`
+5. L'API est accessible via l'URL publique suivante : **[INSÈRE ICI L'URL DE TON BACKEND SUR RENDER]**
