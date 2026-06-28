@@ -21,12 +21,8 @@ COPY . /var/www/html/
 
 WORKDIR /var/www/html
 
-# Supprimer le lock existant et forcer la résolution
-RUN rm -f composer.lock
-
-# Update au lieu de install pour forcer la résolution des dépendances
-RUN rm -f composer.lock
-RUN composer update --no-interaction --no-dev --optimize-autoloader --prefer-dist
+# Installer avec le composer.lock existant (Laravel 13)
+RUN composer install --no-interaction --no-dev --optimize-autoloader --prefer-dist
 
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
