@@ -13,16 +13,14 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Vider les tables dans le bon ordre
-        DB::statement('SET session_replication_role = replica;'); // désactive les FK pour PostgreSQL
-        DB::table('etudiant_classe')->truncate();
-        DB::table('enseignant_matiere_classe')->truncate();
-        DB::table('notes')->truncate();
-        DB::table('personal_access_tokens')->truncate();
-        DB::table('users')->truncate();
-        DB::table('classes')->truncate();
-        DB::table('matieres')->truncate();
-        DB::statement('SET session_replication_role = DEFAULT;');
+        // Vider les tables dans le bon ordre (sans désactiver les FK)
+        DB::table('etudiant_classe')->delete();
+        DB::table('enseignant_matiere_classe')->delete();
+        DB::table('notes')->delete();
+        DB::table('personal_access_tokens')->delete();
+        DB::table('users')->delete();
+        DB::table('classes')->delete();
+        DB::table('matieres')->delete();
 
         // 1. UTILISATEURS
         $admin = User::create([
@@ -63,21 +61,21 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $matiere1 = Matiere::create([
-            'nom'               => 'Développement Web Fullstack',
-            'code'              => 'DEVWEB',
-            'coefficient_defaut'=> 3,
+            'nom'                => 'Développement Web Fullstack',
+            'code'               => 'DEVWEB',
+            'coefficient_defaut' => 3,
         ]);
 
         $matiere2 = Matiere::create([
-            'nom'               => 'Base de données',
-            'code'              => 'BDD',
-            'coefficient_defaut'=> 2,
+            'nom'                => 'Base de données',
+            'code'               => 'BDD',
+            'coefficient_defaut' => 2,
         ]);
 
         $matiere3 = Matiere::create([
-            'nom'               => 'Réseaux informatiques',
-            'code'              => 'RESEAU',
-            'coefficient_defaut'=> 2,
+            'nom'                => 'Réseaux informatiques',
+            'code'               => 'RESEAU',
+            'coefficient_defaut' => 2,
         ]);
 
         // 3. AFFECTATIONS enseignant → matière → classe
