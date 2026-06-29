@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libzip-dev \
     libonig-dev \
+    libpq-dev \
     zip \
     unzip \
     git \
@@ -11,7 +12,8 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN docker-php-ext-install pdo pdo_mysql mbstring gd zip
+# Extensions PHP — pdo_pgsql pour PostgreSQL
+RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring gd zip
 
 RUN echo "memory_limit = 512M" > /usr/local/etc/php/conf.d/memory.ini
 
@@ -21,7 +23,6 @@ COPY . /var/www/html/
 
 WORKDIR /var/www/html
 
-# Installer avec le composer.lock existant (Laravel 13)
 RUN composer install --no-interaction --no-dev --optimize-autoloader --prefer-dist
 
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
