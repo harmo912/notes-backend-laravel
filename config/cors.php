@@ -6,11 +6,14 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        'http://localhost:5173',  // Vite (React)
-        'http://localhost:3000',  // fallback si tu uses CRA
+        'http://localhost:3000',
+        'http://localhost:5173',
+        'https://notes-frontend-nextjs-zxq2-djnir0pa1-harmo912s-projects.vercel.app',
     ],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        '#^https://.*\.vercel\.app$#',
+    ],
 
     'allowed_headers' => ['*'],
 
@@ -18,5 +21,5 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => false, // ← Bearer Token = pas de cookies
+    'supports_credentials' => false,
 ];
