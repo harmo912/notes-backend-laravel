@@ -39,8 +39,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/affectations/etudiant', [AffectationController::class, 'affecterEtudiant']);
     // Route temporaire pour seeder — À SUPPRIMER APRÈS
     Route::get('/setup-db', function () {
-    Artisan::call('migrate', ['--force' => true]);
-    Artisan::call('db:seed', ['--force' => true]);
-    return response()->json(['message' => 'Migration et seeding terminés !']);
-    });
+    try {
+        Artisan::call('migrate', ['--force' => true]);
+        Artisan::call('db:seed', ['--force' => true]);
+        return response()->json([
+            'message' => 'Terminé !',
+            'migrate' => Artisan::output(),
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ], 500);
+    }
+});
 });
