@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClasseController;
 use App\Http\Controllers\Api\MatiereController;
@@ -36,4 +37,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/affectations', [AffectationController::class, 'store']);
     Route::delete('/affectations/{id}', [AffectationController::class, 'destroy']);
     Route::post('/affectations/etudiant', [AffectationController::class, 'affecterEtudiant']);
+    // Route temporaire pour seeder — À SUPPRIMER APRÈS
+    Route::get('/setup-db', function () {
+    Artisan::call('migrate', ['--force' => true]);
+    Artisan::call('db:seed', ['--force' => true]);
+    return response()->json(['message' => 'Migration et seeding terminés !']);
+    });
 });
