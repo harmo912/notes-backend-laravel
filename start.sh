@@ -1,12 +1,14 @@
 #!/bin/bash
 
-# Générer la clé si elle n'existe pas
-php artisan key:generate --force
+# Permissions storage
+chmod -R 777 /var/www/html/storage
+chmod -R 777 /var/www/html/bootstrap/cache
 
-# Lancer les migrations + seeders
-php artisan migrate --seed --force
+# Migrations + seeders
+php artisan migrate --force
+php artisan db:seed --force
 
-# Vider les caches
+# Cache
 php artisan config:clear
 php artisan cache:clear
 

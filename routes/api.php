@@ -16,6 +16,9 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+    Route::get('/login', function() {
+    return response()->json(['message' => 'Utilisez POST pour vous connecter.'], 405);
+})->name('login');
 
     // Classes & Matières
     Route::get('/classes', [ClasseController::class, 'index']);

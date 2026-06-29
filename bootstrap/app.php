@@ -28,10 +28,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Si Sanctum dit "Pas connecté", renvoie un 401 propre
         $exceptions->render(function (AuthenticationException $e, Request $request) {
-            if ($request->is('api/*')) {
-                return response()->json([
-                    'message' => 'Non authentifié. Votre token est absent ou invalide.'
-                ], 401);
-            }
-        });
+    return response()->json([
+        'message' => 'Non authentifié. Votre token est absent ou invalide.'
+    ], 401);
+});
     })->create();
