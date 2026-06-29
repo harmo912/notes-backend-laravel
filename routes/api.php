@@ -41,19 +41,25 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/affectations/{id}', [AffectationController::class, 'destroy']);
     Route::post('/affectations/etudiant', [AffectationController::class, 'affecterEtudiant']);
     // Route temporaire pour seeder — À SUPPRIMER APRÈS
-    Route::get('/setup-db', function () {
+   // Routes Publiques --- HORS du groupe auth:sanctum
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/login', function() {
+    return response()->json(['message' => 'Utilisez POST.'], 405);
+})->name('login');
+
+// ✅ Setup temporaire — HORS du groupe auth
+Route::get('/setup-db', function () {
     try {
         Artisan::call('migrate', ['--force' => true]);
         Artisan::call('db:seed', ['--force' => true]);
-        return response()->json([
-            'message' => 'Terminé !',
-            'migrate' => Artisan::output(),
-        ]);
+        return response()->json(['message' => 'Terminé !']);
     } catch (\Exception $e) {
-        return response()->json([
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString(),
-        ], 500);
+        return response()->json(['error' => $e->getMessage()], 500);
     }
+});
+
+// Routes Sécurisées
+Route::middleware('auth:sanctum')->group(function () {
+    // ... reste des routes
 });
 });
