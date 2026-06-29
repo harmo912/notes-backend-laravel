@@ -13,78 +13,93 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. CRÉATION DES UTILISATEURS (Calqué sur tes vrais IDs de BDD)
+        // Vider les tables dans le bon ordre
+        DB::statement('SET session_replication_role = replica;'); // désactive les FK pour PostgreSQL
+        DB::table('etudiant_classe')->truncate();
+        DB::table('enseignant_matiere_classe')->truncate();
+        DB::table('notes')->truncate();
+        DB::table('personal_access_tokens')->truncate();
+        DB::table('users')->truncate();
+        DB::table('classes')->truncate();
+        DB::table('matieres')->truncate();
+        DB::statement('SET session_replication_role = DEFAULT;');
+
+        // 1. UTILISATEURS
         $admin = User::create([
-            'id' => 1,
-            'name' => 'Admin Système',
-            'email' => 'admin@test.com',
+            'name'     => 'Admin Système',
+            'email'    => 'admin@test.com',
             'password' => Hash::make('password'),
-            'role' => 'admin',
+            'role'     => 'admin',
         ]);
 
-        $enseignant = User::create([
-            'id' => 2,
-            'name' => 'Dr. Koffi Mensah',
-            'email' => 'koffi@test.com',
+        $enseignant1 = User::create([
+            'name'     => 'Dr. Koffi Mensah',
+            'email'    => 'koffi@test.com',
             'password' => Hash::make('password'),
-            'role' => 'enseignant',
+            'role'     => 'enseignant',
         ]);
 
-        User::create([
-    'name' => 'Dr. Koffi Mensah',
-    'email' => 'koffi@test.com',
-    'password' => Hash::make('password'),
-    'role' => 'enseignant',
-    'created_at' => now(), // Insère la seconde exacte actuelle
-    'updated_at' => now(),
-]);
-        // Création des 5 étudiants
-        $etudiantIds = [];
+        $enseignant2 = User::create([
+            'name'     => 'Mme. Marie Silva',
+            'email'    => 'marie@test.com',
+            'password' => Hash::make('password'),
+            'role'     => 'enseignant',
+        ]);
+
+        $etudiants = [];
         for ($i = 1; $i <= 5; $i++) {
-            $student = User::create([
-                'id' => $i + 3, // IDs de 4 à 8
-                'name' => "Étudiant Modèle $i",
-                'email' => "etudiant$i@test.com",
+            $etudiants[] = User::create([
+                'name'     => "Étudiant Modèle $i",
+                'email'    => "etudiant$i@test.com",
                 'password' => Hash::make('password'),
-                'role' => 'etudiant',
+                'role'     => 'etudiant',
             ]);
-            $etudiantIds[] = $student->id;
         }
 
-        // 2. CRÉATION DE LA CLASSE ET DE LA MATIÈRE
+        // 2. CLASSE ET MATIÈRES
         $classe = Classe::create([
-            'id' => 1,
-            'nom' => 'Licence 2 Informatique de Gestion',
+            'nom'              => 'Licence 2 Informatique de Gestion',
             'annee_academique' => '2025-2026',
         ]);
 
-        $matiere = Matiere::create([
-            'id' => 1,
-            'nom' => 'Développement Web Fullstack',
-            'code' => 'DEVWEB',
-            'coefficient_defaut' => 3,
+        $matiere1 = Matiere::create([
+            'nom'               => 'Développement Web Fullstack',
+            'code'              => 'DEVWEB',
+            'coefficient_defaut'=> 3,
         ]);
 
-        // 3. REMPLISSAGE DES TABLES PIVOTS (Ce qui corrige tes bugs !)
-        
-        // Liaison Enseignant <-> Matière <-> Classe
-        DB::table('enseignant_matiere_classe')->insert([
-            'enseignant_id' => $enseignant->id,
-            'matiere_id' => $matiere->id,
-            'classe_id' => $classe->id,
-            'annee' => '2025-2026',
-            'created_at' => now(),
-            'updated_at' => now(),
+        $matiere2 = Matiere::create([
+            'nom'               => 'Base de données',
+            'code'              => 'BDD',
+            'coefficient_defaut'=> 2,
         ]);
 
-        // Liaison Étudiants <-> Classe (La table qui était vide)
-        foreach ($etudiantIds as $id) {
+        $matiere3 = Matiere::create([
+            'nom'               => 'Réseaux informatiques',
+            'code'              => 'RESEAU',
+            'coefficient_defaut'=> 2,
+        ]);
+
+        // 3. AFFECTATIONS enseignant → matière → classe
+        foreach ([$matiere1, $matiere2, $matiere3] as $matiere) {
+            DB::table('enseignant_matiere_classe')->insert([
+                'enseignant_id' => $enseignant1->id,
+                'matiere_id'    => $matiere->id,
+                'classe_id'     => $classe->id,
+                'annee'         => '2025-2026',
+                'created_at'    => now(),
+                'updated_at'    => now(),
+            ]);
+        }
+
+        // 4. AFFECTATIONS étudiants → classe
+        foreach ($etudiants as $etudiant) {
             DB::table('etudiant_classe')->insert([
-                'etudiant_id' => $id,
-                'classe_id' => $classe->id,
-                'annee' => '2025-2026',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'etudiant_id' => $etudiant->id,
+                'classe_id'   => $classe->id,
+                'annee'       => '2025-2026',
+                'created_at'  => now(),
+                'updated_at'  => now(),
             ]);
         }
     }
