@@ -11,14 +11,25 @@ use Illuminate\Support\Facades\Route;
 
 // --- Routes Publiques ---
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/login', function() {
+    return response()->json(['message' => 'Utilisez POST.'], 405);
+})->name('login');
+
+// ✅ Setup temporaire — À SUPPRIMER APRÈS
+Route::get('/setup-db', function () {
+    try {
+        Artisan::call('migrate', ['--force' => true]);
+        Artisan::call('db:seed', ['--force' => true]);
+        return response()->json(['message' => 'Terminé !']);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+});
 
 // --- Routes Sécurisées par Sanctum ---
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
-    Route::get('/login', function() {
-    return response()->json(['message' => 'Utilisez POST pour vous connecter.'], 405);
-})->name('login');
 
     // Classes & Matières
     Route::get('/classes', [ClasseController::class, 'index']);
@@ -40,26 +51,4 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/affectations', [AffectationController::class, 'store']);
     Route::delete('/affectations/{id}', [AffectationController::class, 'destroy']);
     Route::post('/affectations/etudiant', [AffectationController::class, 'affecterEtudiant']);
-    // Route temporaire pour seeder — À SUPPRIMER APRÈS
-   // Routes Publiques --- HORS du groupe auth:sanctum
-Route::post('/login', [AuthController::class, 'login']);
-Route::get('/login', function() {
-    return response()->json(['message' => 'Utilisez POST.'], 405);
-})->name('login');
-
-// ✅ Setup temporaire — HORS du groupe auth
-Route::get('/setup-db', function () {
-    try {
-        Artisan::call('migrate', ['--force' => true]);
-        Artisan::call('db:seed', ['--force' => true]);
-        return response()->json(['message' => 'Terminé !']);
-    } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage()], 500);
-    }
-});
-
-// Routes Sécurisées
-Route::middleware('auth:sanctum')->group(function () {
-    // ... reste des routes
-});
 });
